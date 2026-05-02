@@ -546,7 +546,12 @@
                 <i class="fas fa-user-circle"></i>
                 <span>Profile</span>
             </a>
-            <a href="logout.html" class="nav-item" onclick="event.preventDefault(); window.location.href='index.html'">
+            <a href="contact.html" class="nav-item">
+                <i class="fas fa-headset"></i>
+                <span>Contact</span>
+            </a>
+            <a href="#" class="nav-item"
+                onclick="event.preventDefault(); document.getElementById('logoutConfirmOverlay').style.display='flex';">
                 <i class="fas fa-sign-out-alt"></i>
                 <span>Logout</span>
             </a>
@@ -583,19 +588,19 @@
 
         <!-- Payment Methods -->
         <div class="payment-row">
-            <div class="payment-card" onclick="alert('JazzCash Clicked')">
+            <div class="payment-card" onclick=window.location.href="withraw.html">
                 <img src="images/jazzcash.png" alt="JazzCash">
                 <p>JazzCash</p>
             </div>
-            <div class="payment-card" onclick="alert('Bank Account Clicked')">
+            <div class="payment-card" onclick=window.location.href="withdraw.html">
                 <img src="images/bank.png" alt="Bank Account">
                 <p>Bank Account</p>
             </div>
-            <div class="payment-card" onclick="alert('Crypto Wallet Clicked')">
+            <div class="payment-card" onclick=window.location.href="withdraw.html">
                 <img src="images/btc-wallet.png" alt="Crypto Wallet">
                 <p>Crypto Wallet</p>
             </div>
-            <div class="payment-card" onclick="alert('Payeer Clicked')">
+            <div class="payment-card" onclick=window.location.href="withdraw.html">
                 <img src="images/payeer.png" alt="Payeer">
                 <p>Payeer Wallet</p>
             </div>
@@ -603,22 +608,22 @@
 
         <!-- Stats Row -->
         <div class="stats-row">
-            <div class="stat-card" onclick="alert('Total Deposit')">
+            <div class="stat-card">
                 <div class="stat-icon"><i class="fas fa-wallet"></i></div>
                 <div class="stat-title">Total Deposit</div>
                 <div class="stat-value">50 USD</div>
             </div>
-            <div class="stat-card" onclick="alert('Total Withdrawal')">
+            <div class="stat-card">
                 <div class="stat-icon"><i class="fas fa-download"></i></div>
                 <div class="stat-title">Total Withdrawal</div>
                 <div class="stat-value">10 USD</div>
-            </div>1
+            </div>
             <div class="stat-card">
                 <div class="stat-icon"><i class="fas fa-user-friends"></i></div>
                 <div class="stat-title">Total Refferal</div>
                 <div class="stat-value">10</div>
             </div>
-            <div class="stat-card" onclick="alert('Refer Earn')">
+            <div class="stat-card">
                 <div class="stat-icon"><i class="fas fa-percent"></i></div>
                 <div class="stat-title">Refer Earn</div>
                 <div class="stat-value">10 USD</div>
@@ -822,6 +827,67 @@
         }
     </script>
 
+    <!-- Logout Confirmation Popup -->
+    <style>
+        @keyframes popInLogout {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+    </style>
+    <div id="logoutConfirmOverlay"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 9999;">
+        <div
+            style="background: white; padding: 40px; border-radius: 16px; text-align: center; max-width: 400px; width: 90%; animation: popInLogout 0.3s ease;">
+            <i class="fas fa-sign-out-alt" style="font-size: 60px; color: #d9534f; margin-bottom: 20px;"></i>
+            <h3 style="font-size: 24px; color: #333; margin-bottom: 15px;">Confirm Logout</h3>
+            <p style="color: #666; font-size: 15px; margin-bottom: 25px;">Are you sure you want to logout of your
+                account?</p>
+            <div style="display: flex; gap: 15px; justify-content: center;">
+                <button onclick="document.getElementById('logoutConfirmOverlay').style.display='none'"
+                    style="background: #f1f1f1; color: #333; padding: 12px 30px; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; flex: 1; transition: background 0.3s;"
+                    onmouseover="this.style.background='#e2e2e2'"
+                    onmouseout="this.style.background='#f1f1f1'">Cancel</button>
+                <button onclick="window.location.href='index.html'"
+                    style="background: #d9534f; color: white; padding: 12px 30px; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; flex: 1; transition: background 0.3s;"
+                    onmouseover="this.style.background='#c9302c'"
+                    onmouseout="this.style.background='#d9534f'">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Success Popup -->
+    <div id="loginSuccessOverlay"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 9999;">
+        <div
+            style="background: white; padding: 40px; border-radius: 16px; text-align: center; max-width: 400px; width: 90%; animation: popInLogout 0.3s ease;">
+            <i class="fas fa-check-circle" style="font-size: 60px; color: #008a45; margin-bottom: 20px;"></i>
+            <h3 style="font-size: 24px; color: #333; margin-bottom: 15px;">Login Successful!</h3>
+            <p style="color: #666; font-size: 15px; margin-bottom: 0;">Welcome back to C Mining Dashboard.</p>
+        </div>
+    </div>
+
+    <script>
+        // Check for login success parameter
+        window.addEventListener('load', function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('login') === 'success') {
+                document.getElementById('loginSuccessOverlay').style.display = 'flex';
+                // Remove parameter from URL without reloading
+                window.history.replaceState({}, document.title, window.location.pathname);
+                // Auto close after 3 seconds
+                setTimeout(() => {
+                    document.getElementById('loginSuccessOverlay').style.display = 'none';
+                }, 3000);
+            }
+        });
+    </script>
 </body>
 
 </html>
