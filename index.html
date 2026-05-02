@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C Mining Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background: #f8faf9; color: #333; }
+        
+        /* Header */
+        .header { background-color: #0a1f1a; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #00ff9d; position: sticky; top: 0; z-index: 100; }
+        .logo { display: flex; align-items: center; font-size: 26px; font-weight: bold; color: white; }
+        .logo .c { color: #00ff9d; font-size: 34px; margin-right: 8px; }
+        
+        .top-stats { display: flex; gap: 15px; margin-left: auto; margin-right: 40px; }
+        .stat-box { display: flex; flex-direction: column; padding: 5px 12px; }
+        .stat-box .stat-title { font-size: 11px; color: #00ff9d; display: flex; align-items: center; gap: 5px; margin-bottom: 4px; opacity: 0.8; }
+        .stat-box .stat-value { font-size: 14px; font-weight: bold; color: white; display: flex; align-items: center; gap: 5px; }
+
+        .nav-icons { display: flex; gap: 30px; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: white; text-decoration: none; font-size: 12px; font-weight: 500; gap: 6px; cursor: pointer; transition: color 0.3s; }
+        .nav-item i { font-size: 20px; }
+        .nav-item:hover { color: #00ff9d; }
+
+        /* Hero Section */
+        .hero-section { background: linear-gradient(135deg, #f0fdf4 0%, #e8f5ed 100%); padding: 50px 40px; display: flex; align-items: center; justify-content: space-between; position: relative; overflow: hidden; margin-bottom: 30px; }
+        .hero-text { flex: 1; z-index: 2; max-width: 500px; }
+        .hero-text h1 { font-size: 52px; font-weight: 800; color: #0a1f1a; line-height: 1.15; margin-bottom: 15px; }
+        .hero-subtext { font-size: 20px; color: #555; margin-bottom: 30px; line-height: 1.4; font-weight: 500; }
+        
+        .hero-balance { margin-bottom: 25px; }
+        .hero-balance p { color: #444; font-size: 18px; margin-bottom: 5px; font-weight: 500; }
+        .hero-balance h2 { font-size: 48px; font-weight: 800; color: #0a1f1a; display: flex; align-items: baseline; gap: 10px; }
+        .hero-balance h2 span { color: #008a45; } 
+        
+        .hero-buttons { display: flex; gap: 15px; }
+        .btn { padding: 16px 35px; border-radius: 10px; font-weight: 700; font-size: 17px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px; border: none; text-decoration: none; transition: transform 0.2s ease, opacity 0.2s ease; }
+        .btn:hover { transform: translateY(-2px); opacity: 0.9; }
+        .btn:active { transform: translateY(1px); }
+        .btn-deposit { background: #0f3f26; color: white; box-shadow: 0 4px 15px rgba(15, 63, 38, 0.2); }
+        .btn-withdraw { background: white; color: #0f3f26; border: 2px solid #0f3f26; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); }
+        .btn-withdraw i { color: #008a45; }
+        
+        .hero-image { flex: 1; text-align: right; position: relative; z-index: 1; }
+        .hero-image img { max-width: 450px; width: 100%; object-fit: contain; transform: scale(1.1); }
+
+        .content-container { padding: 0 40px; max-width: 1400px; margin: 0 auto; }
+
+        .payment-card, .action-card, .table-card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .payment-card:hover, .action-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.06); }
+
+        /* Payment Methods */
+        .payment-row { display: flex; gap: 20px; margin-bottom: 30px; }
+        .payment-card { flex: 1; background: white; border-radius: 16px; padding: 25px 15px; text-align: center; border: 1px solid #eaeeeb; box-shadow: 0 4px 15px rgba(0,0,0,0.02); cursor: pointer; }
+        .payment-card img { height: 55px; margin-bottom: 15px; object-fit: contain; }
+        .payment-card p { font-size: 16px; font-weight: 500; color: #222; }
+
+        /* Invest and Bet Row */
+        .action-cards-row { display: flex; gap: 20px; margin-bottom: 30px; }
+        .action-card { flex: 1; border-radius: 20px; padding: 35px; border: 1px solid #eaeeeb; box-shadow: 0 4px 15px rgba(0,0,0,0.02); position: relative; overflow: hidden; }
+        
+        .invest-list { list-style: none; margin-bottom: 30px; position: relative; z-index: 2; }
+        .invest-list li { margin-bottom: 15px; font-size: 15px; display: flex; align-items: center; gap: 10px; }
+        .invest-list li::before { content: "•"; color: #00ff9d; font-size: 20px; }
+        .invest-img { position: absolute; right: 10px; bottom: 10px; height: 180px; object-fit: contain; opacity: 0.9; }
+        
+        .bet-list { list-style: none; margin-bottom: 30px; position: relative; z-index: 2; border-top: 1px dashed rgba(0,0,0,0.1); padding-top: 20px; }
+        .bet-list li { margin-bottom: 15px; font-size: 15px; display: flex; align-items: center; gap: 10px; font-weight: 500; }
+        .bet-list li::before { content: "•"; color: #0f3f26; font-size: 20px; }
+        .bet-img { position: absolute; right: 20px; top: 80px; height: 120px; object-fit: contain; }
+
+        /* Tables Row */
+        .tables-row { display: flex; gap: 20px; margin-bottom: 30px; }
+        .table-card { flex: 1; background: white; border-radius: 16px; border: 1px solid #eaeeeb; box-shadow: 0 4px 15px rgba(0,0,0,0.02); overflow: hidden; }
+        .table-header-title { padding: 22px 25px; font-size: 17px; font-weight: 700; color: #222; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #f5f5f5; }
+        .table-header-title i { color: #008a45; font-size: 20px; }
+        
+        table { width: 100%; border-collapse: collapse; text-align: center; }
+        th { background: #0f3f26; color: white; padding: 16px; font-weight: 600; font-size: 15px; text-align: center; }
+        td { padding: 20px 15px; color: #555; font-size: 14px; border-bottom: 1px solid #f9f9f9; font-weight: 500; text-align: center; }
+        tr:last-child td { border-bottom: none; }
+        .status-success { background: #e8f5ec; color: #008a45; padding: 8px 18px; border-radius: 20px; font-size: 13px; font-weight: bold; }
+        .btn-action { background: #0f3f26; color: white; width: 100%; padding: 16px; border: none; border-radius: 10px; font-weight: bold; font-size: 15px; cursor: pointer; transition: background 0.3s; }
+        .btn-action:hover { background: #0a1f1a; }
+
+        /* Refer & Earn Banner */
+        .refer-banner { background: white; border: 1px solid #eaeeeb; border-radius: 16px; padding: 30px 40px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 50px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); flex-wrap: wrap; gap: 20px; }
+        .refer-left { display: flex; align-items: center; gap: 15px; }
+        .refer-title { font-size: 24px; font-weight: bold; color: #222; }
+        .refer-middle { display: flex; align-items: center; gap: 20px; }
+        .refer-percent { font-size: 56px; font-weight: bold; color: #0f3f26; }
+        .refer-text { font-size: 16px; color: #555; line-height: 1.4; font-weight: 500;}
+
+        /* Footer */
+        footer { background: #0a1f1a; padding: 50px 40px; color: white; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 30px; position: relative; overflow: hidden; border-top: 4px solid #00ff9d; }
+        .footer-logo { display: flex; align-items: center; font-size: 24px; font-weight: bold; margin-bottom: 10px; }
+        .footer-logo .c { color: #00ff9d; font-size: 36px; margin-right: 8px; }
+        .footer-copy { font-size: 13px; color: #888; margin-top: 40px; }
+        .footer-links h4, .footer-contact h4 { font-size: 16px; margin-bottom: 20px; color: white; }
+        .footer-links ul { list-style: none; }
+        .footer-links ul li { margin-bottom: 12px; }
+        .footer-links a { color: #aaa; text-decoration: none; font-size: 14px; transition: color 0.2s; }
+        .footer-links a:hover { color: #00ff9d; }
+        .footer-contact p { font-size: 14px; color: #aaa; margin-bottom: 10px; }
+        .social-icons { display: flex; gap: 15px; margin-top: 20px; }
+        .social-icons i { color: white; font-size: 18px; cursor: pointer; transition: color 0.2s; }
+        .social-icons i:hover { color: #00ff9d; }
+        .footer-img { position: absolute; right: 20px; bottom: 0px; height: 160px; object-fit: contain; }
+
+        /* Popup */
+        .popup { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(5px); justify-content: center; align-items: center; animation: fadeIn 0.4s ease; z-index: 1000; }
+        .popup-box { background: linear-gradient(135deg, #ffffff, #f3f7ff); padding: 30px; border-radius: 15px; width: 320px; text-align: center; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); animation: slideUp 0.4s ease; }
+        .popup-box h2 { margin-bottom: 15px; color: #333; }
+        .popup-box input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #ccc; outline: none; transition: 0.3s; }
+        .popup-box input:focus { border-color: #0f3f26; box-shadow: 0 0 8px rgba(76, 175, 80, 0.3); }
+        .popup-box button { width: 100%; padding: 12px; background: #0f3f26; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 10px; }
+        .popup-box button:hover { transform: scale(1.03); opacity: 0.9; }
+        .close-btn { margin-top: 15px; cursor: pointer; color: #ff4d4d; font-weight: bold; transition: color 0.3s; }
+        .close-btn:hover { color: #cc0000; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        @media (max-width: 992px) {
+            .hero-section { flex-direction: column; text-align: center; padding: 40px 20px; }
+            .hero-text { margin-bottom: 40px; }
+            .hero-buttons { justify-content: center; }
+            .payment-row, .action-cards-row, .tables-row { flex-direction: column; }
+            .hero-balance h2 { justify-content: center; }
+            .content-container { padding: 0 20px; }
+            .top-stats { display: none; }
+            .refer-banner { justify-content: center; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Popup -->
+    <div id="authPopup" class="popup">
+        <div class="popup-box">
+            <h2 id="popupTitle">Login</h2>
+            <input type="text" id="username" placeholder="Enter Username">
+            <input type="password" id="password" placeholder="Enter Password">
+            <button onclick="submitAuth()">Submit</button>
+            <p onclick="closePopup()" class="close-btn">Close</p>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <span class="c">C</span>
+            <span>Dashboard</span>
+        </div>
+        
+        <div class="top-stats">
+            <div class="stat-box">
+                <span class="stat-title"><i class="fas fa-users"></i> Total Users</span>
+                <span class="stat-value">12,845</span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-title"><i class="fas fa-wallet"></i> Total Invested</span>
+                <span class="stat-value">$ 482,750</span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-title"><i class="fas fa-arrow-up"></i> Total Withdrawn</span>
+                <span class="stat-value">$ 278,960</span>
+            </div>
+        </div>
+
+        <div class="nav-icons">
+            <a href="index.html" class="nav-item">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+            </a>
+            <a href="#" class="nav-item" onclick="openPopup('login')">
+                <i class="fas fa-lock"></i>
+                <span>Login</span>
+            </a>
+            <a href="#" class="nav-item" onclick="openPopup('signup')">
+                <i class="fas fa-user-plus"></i>
+                <span>Signup</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fas fa-phone-alt"></i>
+                <span>Contact Us</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <div class="hero-text">
+            <h1>Earn Every<br>Day With<br>Mining</h1>
+            <p class="hero-subtext">Start mining today and<br>grow your future</p>
+            
+            <div class="hero-balance">
+                <p>Your Balance</p>
+                <h2><span style="color: #008a45;">50</span> USD</h2>
+            </div>
+            
+            <div class="hero-buttons">
+                <button class="btn btn-deposit" onclick="openPopup('login')"><i class="fas fa-user"></i> Login</button>
+                <button class="btn btn-withdraw" onclick="openPopup('signup')"><i class="fas fa-user-plus"></i> Signup</button>
+            </div>
+        </div>
+        
+        <div class="hero-image">
+            <img src="images/machine1.png" alt="Mining Machine">
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content-container">
+        
+        <!-- Payment Methods -->
+        <div class="payment-row">
+            <div class="payment-card">
+                <img src="images/jazzcash.png" alt="JazzCash">
+                <p>JazzCash</p>
+            </div>
+            <div class="payment-card">
+                <img src="images/bank.png" alt="Bank Account">
+                <p>Bank Account</p>
+            </div>
+            <div class="payment-card">
+                <img src="images/btc-wallet.png" alt="Crypto Wallet">
+                <p>Crypto Wallet</p>
+            </div>
+            <div class="payment-card">
+                <img src="images/payeer.png" alt="Payeer">
+                <p>Payeer Wallet</p>
+            </div>
+        </div>
+
+        <!-- Invest and Bet Row -->
+        <div class="action-cards-row">
+            <!-- Invest Card -->
+            <div class="action-card invest-card" style="background: #0f3f26; color: white;">
+                <h2 style="font-size: 26px; margin-bottom: 10px;">Invest Plan</h2>
+                <div style="font-size: 22px; font-weight: bold; color: #00ff9d; margin-bottom: 30px;">120% - 150% <span style="color: white; font-weight: normal; font-size: 16px;">Profit</span></div>
+                
+                <ul class="invest-list">
+                    <li>Minimum Deposit: 5 USD</li>
+                    <li>Maximum Deposit: 1000 USD</li>
+                    <li>Instant Withdraw</li>
+                    <li>24/7 Support</li>
+                </ul>
+                <img src="images/trade.png" alt="Invest Chart" class="invest-img">
+            </div>
+
+            <!-- Bet Card -->
+            <div class="action-card bet-card" style="background: #e8f5ec; color: #333;">
+                <h2 style="font-size: 26px; color: #0f3f26; margin-bottom: 15px;">Bet & Earn</h2>
+                <p style="margin-bottom: 30px; font-size: 16px; color: #444; font-weight: 500;">Play Head & Tail and<br>Earn Upto 200% Profit</p>
+                
+                <ul class="bet-list">
+                    <li>Fast Payouts</li>
+                    <li>Fair Play System</li>
+                    <li>Easy to Play</li>
+                </ul>
+                <img src="images/head-tail.png" alt="Head & Tail" class="bet-img">
+            </div>
+        </div>
+
+        <!-- Tables Row -->
+        <div class="tables-row">
+            <!-- Deposit Table -->
+            <div class="table-card">
+                <div class="table-header-title">
+                    <i class="fas fa-download"></i> All Users Deposits
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Amount</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="color: #333;">Ali Khan</td>
+                            <td>50 USD</td>
+                            <td>20 May 2025</td>
+                            <td><span class="status-success">Success</span></td>
+                        </tr>
+                        <tr>
+                            <td style="color: #333;">Ahmed Raza</td>
+                            <td>30 USD</td>
+                            <td>18 May 2025</td>
+                            <td><span class="status-success">Success</span></td>
+                        </tr>
+                        <tr>
+                            <td style="color: #333;">Usman Ali</td>
+                            <td>20 USD</td>
+                            <td>16 May 2025</td>
+                            <td><span class="status-success">Success</span></td>
+                        </tr>
+                        <tr>
+                            <td style="color: #333;">Bilal Ahmed</td>
+                            <td>10 USD</td>
+                            <td>14 May 2025</td>
+                            <td><span class="status-success">Success</span></td>
+                        </tr>
+                        <tr>
+                            <td style="color: #333;">M. Hassan</td>
+                            <td>5 USD</td>
+                            <td>12 May 2025</td>
+                            <td><span class="status-success">Success</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div style="padding: 15px;">
+                    <button class="btn-action">View All Deposits</button>
+                </div>
+            </div>
+
+            <!-- Withdrawal Table -->
+            <div class="table-card">
+                <div class="table-header-title">
+                    <i class="fas fa-upload"></i> All Users Withdrawals
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Amount</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="color: #333;">Shoaib Malik</td>
+                            <td>10 USD</td>
+                            <td>21 May 2025</td>
+                            <td><span class="status-success">Success</span></td>
+                        </tr>
+                        <tr>
+                            <td style="color: #333;">Zain Ali</td>
+                            <td>7 USD</td>
+                            <td>19 May 2025</td>
+                            <td><span class="status-success">Success</span></td>
+                        </tr>
+                        <tr>
+                            <td style="color: #333;">Hammad Raza</td>
+                            <td>5 USD</td>
+                            <td>17 May 2025</td>
+                            <td><span class="status-success">Success</span></td>
+                        </tr>
+                        <tr>
+                            <td style="color: #333;">Talha Javed</td>
+                            <td>3 USD</td>
+                            <td>15 May 2025</td>
+                            <td><span class="status-success">Success</span></td>
+                        </tr>
+                        <tr>
+                            <td style="color: #333;">Waqas Ahmed</td>
+                            <td>2 USD</td>
+                            <td>13 May 2025</td>
+                            <td><span class="status-success">Success</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div style="padding: 15px;">
+                    <button class="btn-action">View All Withdrawals</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Refer & Earn Banner -->
+        <div class="refer-banner">
+            <div class="refer-left">
+                <i class="fas fa-users" style="font-size: 40px; color: #0f3f26;"></i>
+                <span class="refer-title">Refer & Earn</span>
+            </div>
+            <div class="refer-middle">
+                <span class="refer-percent">30%</span>
+                <span class="refer-text">Per Referral Users<br>On Every Deposit</span>
+            </div>
+            <div class="hero-buttons">
+                <button class="btn btn-deposit" onclick="openPopup('login')" style="padding: 12px 25px;"><i class="fas fa-user"></i> Login</button>
+                <button class="btn btn-withdraw" onclick="openPopup('signup')" style="padding: 12px 25px;"><i class="fas fa-user-plus"></i> Signup</button>
+            </div>
+        </div>
+        
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div style="flex: 1; min-width: 250px; z-index: 2;">
+            <div class="footer-logo">
+                <span class="c">C</span>
+                <span>Dashboard</span>
+            </div>
+            <div class="footer-copy">© 2025 Dashboard. All Rights Reserved.</div>
+        </div>
+
+        <div class="footer-links" style="flex: 1; min-width: 150px; z-index: 2;">
+            <h4>Quick Links</h4>
+            <ul>
+                <li><a href="home.html">Home</a></li>
+                <li><a href="#">About Us</a></li>
+                <li><a href="#">FAQ</a></li>
+                <li><a href="#">Terms & Conditions</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-contact" style="flex: 1; min-width: 250px; z-index: 2;">
+            <h4>Contact Us</h4>
+            <p>Email: support@dashboard.com</p>
+            <p>WhatsApp: +92 300 1234567</p>
+            <div class="social-icons">
+                <i class="fab fa-facebook-f"></i>
+                <i class="fab fa-telegram-plane"></i>
+                <i class="fab fa-whatsapp"></i>
+                <i class="fab fa-youtube"></i>
+            </div>
+        </div>
+
+        <img src="images/machine2.png" alt="Mining Machine" class="footer-img">
+    </footer>
+
+    <!-- Script for Popup -->
+    <script>
+        let mode = "login";
+
+        function openPopup(type) {
+            mode = type;
+            document.getElementById("authPopup").style.display = "flex";
+            document.getElementById("popupTitle").innerText = type.toUpperCase();
+        }
+
+        function closePopup() {
+            document.getElementById("authPopup").style.display = "none";
+        }
+
+        function submitAuth() {
+            let user = document.getElementById("username").value;
+            let pass = document.getElementById("password").value;
+
+            if (mode === "signup") {
+                localStorage.setItem("user", user);
+                localStorage.setItem("pass", pass);
+                alert("Signup Successful ✅");
+                closePopup();
+            }
+            else {
+                let savedUser = localStorage.getItem("user");
+                let savedPass = localStorage.getItem("pass");
+
+                if (user === savedUser && pass === savedPass) {
+                    alert("Login Successful ✅");
+                    // 🔥 Redirect to home.html
+                    window.location.href = "home.html";
+                } else {
+                    alert("Wrong Details ❌");
+                }
+            }
+        }
+    </script>
+
+</body>
+</html>

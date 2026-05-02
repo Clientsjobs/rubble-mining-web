@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C Mining Profile</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: #f8faf9;
+            color: #333;
+        }
+
+        /* Header */
+        .header {
+            background-color: #0a1f1a;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #00ff9d;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 26px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+        }
+
+        .logo .c {
+            color: #00ff9d;
+            font-size: 34px;
+            margin-right: 8px;
+        }
+
+        .nav-icons {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: white;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            gap: 6px;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .nav-item i {
+            font-size: 22px;
+        }
+
+        .nav-item:hover {
+            color: #00ff9d;
+        }
+
+        .nav-item.active {
+            color: #00ff9d;
+        }
+
+        .content-container {
+            padding: 40px 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Reusable Card */
+        .action-card {
+            background: white;
+            border-radius: 20px;
+            padding: 35px;
+            border: 1px solid #eaeeeb;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .action-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Inputs */
+        .input-group {
+            margin-bottom: 20px;
+            width: 100%;
+        }
+
+        .input-label {
+            font-size: 14px;
+            color: #444;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper input {
+            width: 100%;
+            padding: 15px 15px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .input-wrapper input:focus {
+            border-color: #008a45;
+        }
+
+        /* Buttons */
+        .btn-action {
+            background: #0f3f26;
+            color: white;
+            width: 100%;
+            padding: 16px;
+            border-radius: 10px;
+            border: none;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s, opacity 0.2s;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-action:hover {
+            transform: translateY(-2px);
+            opacity: 0.9;
+        }
+
+        .btn-action:active {
+            transform: translateY(1px);
+        }
+
+        /* Profile Specific */
+        .profile-layout {
+            display: flex;
+            gap: 30px;
+            align-items: flex-start;
+        }
+
+        .profile-sidebar {
+            flex: 1;
+            min-width: 320px;
+            max-width: 380px;
+            text-align: center;
+        }
+
+        .profile-main {
+            flex: 2;
+            min-width: 320px;
+        }
+
+        .avatar-container {
+            width: 120px;
+            height: 120px;
+            background: #e8f5ec;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 20px;
+            font-size: 55px;
+            color: #008a45;
+            position: relative;
+        }
+
+        .edit-avatar-btn {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            background: #0f3f26;
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 14px;
+            cursor: pointer;
+            border: 3px solid white;
+            transition: transform 0.2s;
+        }
+
+        .edit-avatar-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .profile-name {
+            font-size: 24px;
+            color: #0a1f1a;
+            margin-bottom: 5px;
+            font-weight: 800;
+        }
+
+        .profile-email {
+            color: #666;
+            margin-bottom: 15px;
+            font-size: 15px;
+        }
+
+        .profile-badge {
+            background: #e8f5ec;
+            color: #008a45;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .profile-stats-divider {
+            border: none;
+            border-top: 1px dashed #ddd;
+            margin: 25px 0;
+        }
+
+        .profile-detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            font-size: 15px;
+        }
+
+        .profile-detail-label {
+            color: #666;
+            font-weight: 500;
+        }
+
+        .profile-detail-value {
+            font-weight: 600;
+            color: #222;
+        }
+
+        .section-title {
+            font-size: 22px;
+            color: #0a1f1a;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: bold;
+        }
+
+        /* Responsive */
+        @media (max-width: 850px) {
+            .profile-layout {
+                flex-direction: column;
+            }
+
+            .profile-sidebar {
+                max-width: none;
+                width: 100%;
+            }
+
+            .content-container {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="logo" onclick="window.location.href='home.html'">
+            <span class="c">C</span>
+            <span>MINING</span>
+        </div>
+        <div class="nav-icons">
+            <a href="home.html" class="nav-item">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+            </a>
+            <a href="profile.html" class="nav-item active">
+                <i class="fas fa-user-circle"></i>
+                <span>Profile</span>
+            </a>
+            <a href="index.html" class="nav-item">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="content-container">
+
+        <div class="profile-layout">
+
+            <!-- Sidebar / Profile Card -->
+            <div class="profile-sidebar">
+                <div class="action-card">
+                    <div class="avatar-container">
+                        <i class="fas fa-user"></i>
+                        <div class="edit-avatar-btn" title="Change Avatar">
+                            <i class="fas fa-camera"></i>
+                        </div>
+                    </div>
+
+                    <h2 class="profile-name">John Doe</h2>
+                    <p class="profile-email">johndoe@example.com</p>
+                    <div class="profile-badge"><i class="fas fa-check-circle"></i> Verified Member</div>
+
+                    <hr class="profile-stats-divider">
+
+                    <div class="profile-detail-row">
+                        <span class="profile-detail-label">Joined Date:</span>
+                        <span class="profile-detail-value">15 Jan, 2025</span>
+                    </div>
+                    <div class="profile-detail-row">
+                        <span class="profile-detail-label">Phone:</span>
+                        <span class="profile-detail-value">+1 234 567 890</span>
+                    </div>
+                    <div class="profile-detail-row">
+                        <span class="profile-detail-label">Country:</span>
+                        <span class="profile-detail-value">United States</span>
+                    </div>
+                    <div class="profile-detail-row">
+                        <span class="profile-detail-label">Account Status:</span>
+                        <span class="profile-detail-value" style="color: #008a45;">Active</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Forms -->
+            <div class="profile-main">
+
+                <!-- Edit Profile Form -->
+                <div class="action-card" style="margin-bottom: 30px;">
+                    <h2 class="section-title">
+                        <i class="fas fa-user-edit" style="color: #008a45;"></i> Edit Personal Info
+                    </h2>
+
+                    <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                        <div class="input-group" style="flex: 1; min-width: 250px;">
+                            <div class="input-label">Full Name</div>
+                            <div class="input-wrapper">
+                                <input type="text" value="John Doe">
+                            </div>
+                        </div>
+                        <div class="input-group" style="flex: 1; min-width: 250px;">
+                            <div class="input-label">Email Address</div>
+                            <div class="input-wrapper">
+                                <input type="email" value="johndoe@example.com">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                        <div class="input-group" style="flex: 1; min-width: 250px;">
+                            <div class="input-label">Phone Number</div>
+                            <div class="input-wrapper">
+                                <input type="text" value="+1 234 567 890">
+                            </div>
+                        </div>
+                        <div class="input-group" style="flex: 1; min-width: 250px;">
+                            <div class="input-label">Country</div>
+                            <div class="input-wrapper">
+                                <input type="text" value="United States">
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="btn-action" style="max-width: 200px;"
+                        onclick="alert('Profile Updated Successfully!')">
+                        <i class="fas fa-save"></i> Save Changes
+                    </button>
+                </div>
+
+                <!-- Change Password Form -->
+                <div class="action-card">
+                    <h2 class="section-title">
+                        <i class="fas fa-lock" style="color: #008a45;"></i> Security Settings
+                    </h2>
+
+                    <div class="input-group" style="max-width: 100%;">
+                        <div class="input-label">Current Password</div>
+                        <div class="input-wrapper">
+                            <input type="password" placeholder="Enter current password">
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                        <div class="input-group" style="flex: 1; min-width: 250px;">
+                            <div class="input-label">New Password</div>
+                            <div class="input-wrapper">
+                                <input type="password" placeholder="Enter new password">
+                            </div>
+                        </div>
+                        <div class="input-group" style="flex: 1; min-width: 250px;">
+                            <div class="input-label">Confirm Password</div>
+                            <div class="input-wrapper">
+                                <input type="password" placeholder="Confirm new password">
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="btn-action" style="max-width: 220px;"
+                        onclick="alert('Password Changed Successfully!')">
+                        <i class="fas fa-key"></i> Update Password
+                    </button>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>
